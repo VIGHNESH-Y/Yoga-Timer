@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditation Timer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="favicon.png">
+</head>
+<body>
+    <div class="container">
+        <h1>🧘 Meditation Timer 🧘</h1>
+        <div class="input-group">
+            <label>Number of Slots:</label>
+            <input type="number" id="subdivisions" min="1" step="1" required>
+        </div>
+        <div id="subdivisionInputs"></div>
+        <button onclick="generateSubdivisionInputs()">Enter Slots Durations</button>
+        <button onclick="startTimer()">Start</button>
+        <button onclick="stopTimer()">Stop</button>
+        <div id="timer-container">
+            <div id="timer"></div>
+            <button id="howToUseButton" onclick="toggleTextBox()">How to use</button>
+            <div class="text-box" id="textBox">
+                <span class="close-icon" onclick="closeTextBox()">&#10006;</span>
+                <h2>How to use the App??</h2>
+                <p>Sit quietly and observe your breathing.</p>
+                <p>Move on to deep breath in and breath out as per your capacity.</p>
+                <p>Now count the depth of your Inhale and Exhale.</p>
+                <p>The counting speed should be the same as the clock ticking speed.</p>
+                <p>One cycle (duration) = 1 Inhale + 1 Exhale</p>
+                <p>Now check your customized Pranayama and Mudra list:</p>
+                <p>A. If the number of cycles is prescribed, then multiply that with 1 Cycle duration.</p>
+                <p>   That is the time you have to enter in the duration slot as Minutes and Seconds.</p>
+                <p>B. If for a Mudra only time is specified (For example, Do prana mudra for 15 Minutes), then directly enter the duration in the Slot.</p>
+                <p>🧎 Sit Quietly 🧎 </p>
+                <p> 😑 Eyes Closed 😑 </p>
+                <p> 🤌 Form the Mudra 🤌 </p>
+                <p>Concentrate on your Breathing without any Interruption</p>
+            </div>
+        </div>
+    </div>
+
+    <audio id="alarmSound" src="./alarm.mp3"></audio>
+    <audio id="ohmSound" src="./ohm.mp3"></audio>
+    <audio id="breakSound" src="./break.mp3"></audio>
+    
+    <script src="script.js"></script>
+</body>
+</html>
