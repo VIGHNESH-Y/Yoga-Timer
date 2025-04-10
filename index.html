@@ -151,7 +151,6 @@
     <button onclick="generateSubdivisionInputs()">Enter Slot Durations</button>
     <button onclick="startTimer()">Start Session</button>
     <button onclick="stopTimer()">Stop</button>
-
     <div id="timer-container">
       <div id="timer">00:00</div>
       <div id="description-display"></div>
@@ -170,8 +169,7 @@
   <audio id="ohmSound" src="./ohm.mp3" preload="auto" loop></audio>
   <audio id="breakSound" src="./break.mp3" preload="auto"></audio>
 
- <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  <script>
     let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [];
     const timerDisplay = document.getElementById("timer");
     const descriptionDisplay = document.getElementById("description-display");
@@ -214,6 +212,8 @@
     function startTimer() {
       unlockAudio();
       const inputs = subdivisionInputsContainer.querySelectorAll("div");
+      if (!inputs.length) return alert("Please enter durations first using 'Enter Slot Durations'");
+
       subdivisionDurations = [];
       subdivisionDescriptions = [];
 
@@ -234,7 +234,7 @@
 
     function startSubdivision() {
       if (currentSubdivision >= subdivisionDurations.length) {
-        timerDisplay.textContent = "Session Completed";
+        timerDisplay.textContent = "Session Completed :)";
         descriptionDisplay.textContent = "";
         fadeOutAudio("ohmSound");
         fadeInAudio("alarmSound");
@@ -258,7 +258,7 @@
             fadeOutAudio("breakSound");
             currentSubdivision++;
             startSubdivision();
-          }, 10000);
+          }, 15000);
         } else {
           timerDisplay.textContent = formatTime(seconds);
         }
@@ -320,13 +320,6 @@
         audio.play().then(() => audio.pause()).catch(() => {});
       });
     }
-
-    // Attach global functions
-    window.toggleTextBox = toggleTextBox;
-    window.generateSubdivisionInputs = generateSubdivisionInputs;
-    window.startTimer = startTimer;
-    window.stopTimer = stopTimer;
-  });
-</script>
+  </script>
 </body>
 </html>
