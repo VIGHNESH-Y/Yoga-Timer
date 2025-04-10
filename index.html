@@ -170,7 +170,8 @@
   <audio id="ohmSound" src="./ohm.mp3" preload="auto" loop></audio>
   <audio id="breakSound" src="./break.mp3" preload="auto"></audio>
 
-  <script>
+ <script>
+  document.addEventListener("DOMContentLoaded", () => {
     let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [];
     const timerDisplay = document.getElementById("timer");
     const descriptionDisplay = document.getElementById("description-display");
@@ -319,6 +320,13 @@
         audio.play().then(() => audio.pause()).catch(() => {});
       });
     }
-  </script>
+
+    // Attach global functions
+    window.toggleTextBox = toggleTextBox;
+    window.generateSubdivisionInputs = generateSubdivisionInputs;
+    window.startTimer = startTimer;
+    window.stopTimer = stopTimer;
+  });
+</script>
 </body>
 </html>
