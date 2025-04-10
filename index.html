@@ -91,6 +91,7 @@
       color: white;
       cursor: pointer;
       transition: background-color 0.3s;
+      touch-action: manipulation;
     }
 
     button:hover, button:focus {
@@ -162,7 +163,6 @@
         <p>🔔 Ohm sound plays during each slot.</p>
         <p>💤 Break sound plays in between.</p>
         <p>🔚 Alarm rings at the end.</p>
-        <p><strong>🕹 Keyboard Tip:</strong> Press <code>Space</code> to pause/resume the timer.</p>
       </div>
     </div>
   </div>
@@ -237,9 +237,6 @@
       }
 
       currentSubdivision = 0;
-      ohmSound.currentTime = 0;
-      ohmSound.loop = true;
-      ohmSound.play();
       startSubdivision();
     }
 
@@ -256,6 +253,10 @@
       remainingTime = seconds;
       descriptionDisplay.textContent = subdivisionDescriptions[currentSubdivision] || "";
       timerDisplay.textContent = formatTime(seconds);
+
+      ohmSound.currentTime = 0;
+      ohmSound.loop = true;
+      ohmSound.play();
 
       timer = setInterval(() => {
         if (!paused) {
@@ -282,9 +283,6 @@
                 breakSound.pause();
                 breakSound.currentTime = 0;
                 currentSubdivision++;
-                ohmSound.currentTime = 0;
-                ohmSound.loop = true;
-                ohmSound.play();
                 startSubdivision();
               }, 15000);
             } else {
@@ -332,7 +330,6 @@
         audio.play().then(() => audio.pause()).catch(() => {});
       });
     }
-    });
   </script>
 </body>
 </html>
