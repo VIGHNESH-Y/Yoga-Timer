@@ -2,165 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Yoga Timer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yoga Timer</title>
   <link rel="shortcut icon" href="favicon.png">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
     body {
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #000;
-      overflow: hidden;
+      position: relative;
+      background: black;
     }
 
-    #background-video {
-      position: fixed;
+    video#background-video {
+      position: absolute;
       top: 0;
       left: 0;
       min-width: 100%;
       min-height: 100%;
-      z-index: -1;
       object-fit: cover;
-      filter: brightness(0.5);
+      z-index: -1;
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.85);
-      padding: 30px 20px;
-      border-radius: 16px;
-      max-width: 95vw;
-      width: 420px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.3);
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      max-width: 90vw;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
       text-align: center;
+      z-index: 1;
     }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 8vw;
       margin-bottom: 20px;
     }
 
-    .input-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
-    .input-group label {
-      font-size: 1rem;
-      color: #333;
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    button {
-      margin: 8px;
-      padding: 12px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s ease;
-      width: 100%;
-    }
-
-    button:hover {
-      background-color: #388E3C;
+    #timer-container {
+      margin-top: 20px;
     }
 
     #timer {
-      font-size: 2.5rem;
-      margin: 20px 0;
+      font-size: 10vw;
       font-weight: bold;
-      color: #222;
+      margin-bottom: 10px;
+    }
+
+    #description-display {
+      font-size: 5vw;
+      color: #444;
+      margin-top: 10px;
+      min-height: 3em;
+    }
+
+    .input-group label, .input-group input {
+      display: block;
+      margin: 10px auto;
+      font-size: 5vw;
+    }
+
+    .input-group input, textarea {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 5vw;
+      width: 80%;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 4vw;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #3e8e41;
     }
 
     .text-box {
       display: none;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
       text-align: left;
-      background: #f9f9f9;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      font-size: 0.95rem;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 4vw;
     }
 
     .text-box.active {
       display: block;
     }
 
-    @media (max-width: 480px) {
-      .container {
-        width: 95%;
-        padding: 20px 10px;
-      }
-
+    @media (min-width: 768px) {
       h1 {
-        font-size: 1.5rem;
+        font-size: 36px;
       }
 
       #timer {
-        font-size: 2rem;
+        font-size: 64px;
+      }
+
+      .input-group label, .input-group input, textarea, button, .text-box {
+        font-size: 18px;
+      }
+
+      .input-group input {
+        width: auto;
+      }
+
+      #description-display {
+        font-size: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <video autoplay muted loop id="background-video">
-    <source src="https://cdn.pixabay.com/vimeo/448610027/yoga-56482.mp4?width=1280&hash=3e4f1ab4e06ad726162ca6e4cfb69de403f4079e" type="video/mp4">
-    Your browser does not support the video tag.
+  <video id="background-video" autoplay loop muted>
+    <source src="https://cdn.coverr.co/videos/coverr-mountains-landscape-9056/1080p.mp4" type="video/mp4">
   </video>
 
   <div class="container">
     <h1>🧘 Meditation Timer 🧘</h1>
-
     <div class="input-group">
-      <label for="subdivisions">Number of Slots:</label>
-      <input type="number" id="subdivisions" min="1" max="30" step="1" required>
+      <label>Number of Slots:</label>
+      <input type="number" id="subdivisions" min="1" step="1">
     </div>
-
     <div id="subdivisionInputs"></div>
-
     <button onclick="generateSubdivisionInputs()">Enter Slot Durations</button>
-    <button onclick="initializeApp()">Start Session</button>
+    <button onclick="startTimer()">Start Session</button>
     <button onclick="stopTimer()">Stop</button>
-    <button onclick="toggleTextBox()">How to Use</button>
 
-    <div id="timer"></div>
-
-    <div class="text-box" id="textBox">
-      <p>1. Observe your breathing pattern.</p>
-      <p>2. Count Inhale + Exhale = 1 cycle.</p>
-      <p>3. Enter durations based on mudra or pranayama guidance.</p>
-      <p>4. Tap start to begin your silent, focused session.</p>
+    <div id="timer-container">
+      <div id="timer">00:00</div>
+      <div id="description-display"></div>
+      <button onclick="toggleTextBox()">How to Use</button>
+      <div class="text-box" id="textBox">
+        <p>🧘 Sit comfortably and choose a number of slots.</p>
+        <p>🕒 Assign a time and description for each slot.</p>
+        <p>🔔 Ohm sound plays during each slot.</p>
+        <p>💤 Break sound plays in between.</p>
+        <p>🔚 Alarm rings at the end.</p>
+      </div>
     </div>
   </div>
 
-  <audio id="alarmSound" src="alarm.mp3"></audio>
-  <audio id="ohmSound" src="ohm.mp3" loop></audio>
-  <audio id="breakSound" src="break.mp3"></audio>
+  <audio id="alarmSound" src="./alarm.mp3"></audio>
+  <audio id="ohmSound" src="./ohm.mp3" loop></audio>
+  <audio id="breakSound" src="./break.mp3"></audio>
 
   <script>
-    let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [];
+    let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [];
     const timerDisplay = document.getElementById("timer");
-    const subdivisionsInput = document.getElementById("subdivisions");
+    const descriptionDisplay = document.getElementById("description-display");
     const subdivisionInputsContainer = document.getElementById("subdivisionInputs");
 
     function toggleTextBox() {
@@ -168,107 +181,85 @@
     }
 
     function generateSubdivisionInputs() {
-      const subdivisions = parseInt(subdivisionsInput.value);
-      if (subdivisions > 30) {
-        alert("Maximum 30 slots allowed.");
-        return;
-      }
-
+      const count = parseInt(document.getElementById("subdivisions").value);
+      if (!count || count < 1 || count > 30) return alert("Enter valid slot count (1-30)");
       subdivisionInputsContainer.innerHTML = "";
 
-      for (let i = 0; i < subdivisions; i++) {
-        const label = document.createElement("label");
-        label.textContent = `Slot ${i + 1} Duration (min:sec):`;
-
-        const minInput = document.createElement("input");
-        minInput.type = "number";
-        minInput.placeholder = "Min";
-        minInput.min = 0;
-
-        const secInput = document.createElement("input");
-        secInput.type = "number";
-        secInput.placeholder = "Sec";
-        secInput.min = 0;
-
+      for (let i = 0; i < count; i++) {
         const div = document.createElement("div");
-        div.className = "input-group";
-        div.appendChild(label);
+        const minInput = document.createElement("input");
+        const secInput = document.createElement("input");
+        const descInput = document.createElement("textarea");
+
+        minInput.type = "number";
+        minInput.placeholder = "Minutes";
+        minInput.value = "1";
+
+        secInput.type = "number";
+        secInput.placeholder = "Seconds";
+        secInput.value = "0";
+
+        descInput.placeholder = "Description for Slot " + (i + 1);
+
+        div.appendChild(document.createTextNode(`Slot ${i + 1}: `));
         div.appendChild(minInput);
         div.appendChild(secInput);
+        div.appendChild(descInput);
 
         subdivisionInputsContainer.appendChild(div);
       }
     }
 
-    function initializeApp() {
-      unlockAudio();
-      startTimer();
-    }
-
-    function unlockAudio() {
-      ["alarmSound", "ohmSound", "breakSound"].forEach(id => {
-        const audio = document.getElementById(id);
-        audio.volume = 0;
-        audio.play().then(() => {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.volume = 1;
-        }).catch(() => {});
-      });
-    }
-
     function startTimer() {
-      const inputContainers = subdivisionInputsContainer.getElementsByClassName("input-group");
+      unlockAudio();
+      const inputs = subdivisionInputsContainer.querySelectorAll("div");
       subdivisionDurations = [];
+      subdivisionDescriptions = [];
+
+      for (let div of inputs) {
+        const children = div.querySelectorAll("input, textarea");
+        const mins = parseInt(children[0].value) || 0;
+        const secs = parseInt(children[1].value) || 0;
+        const desc = children[2].value.trim();
+        const total = mins * 60 + secs;
+        if (total <= 0) return alert("Invalid duration in one of the slots.");
+        subdivisionDurations.push(total);
+        subdivisionDescriptions.push(desc);
+      }
+
       currentSubdivision = 0;
-
-      for (let i = 0; i < inputContainers.length; i++) {
-        const mins = parseInt(inputContainers[i].children[1].value) || 0;
-        const secs = parseInt(inputContainers[i].children[2].value) || 0;
-        const duration = mins * 60 + secs;
-
-        if (duration <= 0) {
-          alert("Please enter valid duration for each slot.");
-          return;
-        }
-
-        subdivisionDurations.push(duration);
-      }
-
-      if (subdivisionDurations.length === 0) {
-        alert("Add at least one slot.");
-        return;
-      }
-
-      beginSubdivision();
+      startSubdivision();
     }
 
-    function beginSubdivision() {
+    function startSubdivision() {
       if (currentSubdivision >= subdivisionDurations.length) {
-        timerDisplay.textContent = "Session Completed 🧘‍♂️";
-        playAlarmSound();
+        timerDisplay.textContent = "Session Completed";
+        descriptionDisplay.textContent = "";
+        fadeOutAudio("ohmSound");
+        fadeInAudio("alarmSound");
         return;
       }
 
       let seconds = subdivisionDurations[currentSubdivision];
-      playOhmSound();
-      updateTimerDisplay(seconds);
+      descriptionDisplay.textContent = subdivisionDescriptions[currentSubdivision] || "";
+      fadeInAudio("ohmSound");
+      timerDisplay.textContent = formatTime(seconds);
 
       timer = setInterval(() => {
         seconds--;
-        updateTimerDisplay(seconds);
-
-        if (seconds <= 0) {
+        if (seconds < 0) {
           clearInterval(timer);
-          stopOhmSound();
-          timerDisplay.textContent = "Break 🕊️";
-          playBreakSound();
-
+          fadeOutAudio("ohmSound");
+          fadeInAudio("breakSound");
+          timerDisplay.textContent = "Break";
+          descriptionDisplay.textContent = "";
           breakTimer = setTimeout(() => {
-            stopBreakSound();
+            fadeOutAudio("breakSound");
             currentSubdivision++;
-            beginSubdivision();
+            startSubdivision();
           }, 10000);
+        } else {
+          timerDisplay.textContent = formatTime(seconds);
         }
       }, 1000);
     }
@@ -276,78 +267,51 @@
     function stopTimer() {
       clearInterval(timer);
       clearTimeout(breakTimer);
-      subdivisionDurations = [];
-      currentSubdivision = 0;
+      fadeOutAudio("ohmSound");
+      fadeOutAudio("breakSound");
+      fadeOutAudio("alarmSound");
       timerDisplay.textContent = "";
-      subdivisionInputsContainer.innerHTML = "";
-      stopAllAudio();
+      descriptionDisplay.textContent = "";
+      subdivisionDurations = [];
+      subdivisionDescriptions = [];
+      currentSubdivision = 0;
     }
 
-    function updateTimerDisplay(seconds) {
+    function formatTime(seconds) {
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
-      timerDisplay.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+      return `${m}:${s < 10 ? "0" : ""}${s}`;
     }
 
-    function playOhmSound() {
-      const audio = document.getElementById("ohmSound");
-      fadeIn(audio, 1000);
-    }
-
-    function stopOhmSound() {
-      fadeOut(document.getElementById("ohmSound"), 1000);
-    }
-
-    function playBreakSound() {
-      const audio = document.getElementById("breakSound");
-      fadeIn(audio, 500);
-    }
-
-    function stopBreakSound() {
-      fadeOut(document.getElementById("breakSound"), 500);
-    }
-
-    function playAlarmSound() {
-      const audio = document.getElementById("alarmSound");
-      fadeIn(audio, 500);
-      setTimeout(() => fadeOut(audio, 3000), 14000);
-    }
-
-    function stopAllAudio() {
-      ["alarmSound", "ohmSound", "breakSound"].forEach(id => {
-        const audio = document.getElementById(id);
-        audio.pause();
-        audio.currentTime = 0;
-      });
-    }
-
-    function fadeIn(audio, duration) {
+    function fadeInAudio(id) {
+      const audio = document.getElementById(id);
       audio.volume = 0;
+      audio.currentTime = 0;
       audio.play();
-      let vol = 0;
-      const step = 0.05;
-      const fade = setInterval(() => {
-        if (vol < 1) {
-          vol += step;
-          audio.volume = Math.min(vol, 1);
-        } else {
-          clearInterval(fade);
-        }
-      }, duration * step);
+      let fade = setInterval(() => {
+        if (audio.volume < 1) audio.volume += 0.05;
+        else clearInterval(fade);
+      }, 200);
     }
 
-    function fadeOut(audio, duration) {
-      let vol = audio.volume;
-      const step = 0.05;
-      const fade = setInterval(() => {
-        if (vol > 0) {
-          vol -= step;
-          audio.volume = Math.max(vol, 0);
-        } else {
-          audio.pause();
+    function fadeOutAudio(id) {
+      const audio = document.getElementById(id);
+      let fade = setInterval(() => {
+        if (audio.volume > 0.05) audio.volume -= 0.05;
+        else {
           clearInterval(fade);
+          audio.pause();
+          audio.volume = 1;
         }
-      }, duration * step);
+      }, 200);
+    }
+
+    function unlockAudio() {
+      const audios = ["alarmSound", "ohmSound", "breakSound"];
+      audios.forEach(id => {
+        const audio = document.getElementById(id);
+        audio.play().then(() => audio.pause()).catch(() => {});
+      });
     }
   </script>
 </body>
