@@ -14,22 +14,15 @@
       overflow: hidden;
     }
 
-    body {
+  body {
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
       background: black;
-    }
-
-    video#background-video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      z-index: -1;
+      background-image: url('https://wallpapercave.com/wp/wp3157182.jpg');
+      background-size: cover;
+      background-position: center;
     }
 
     .container {
@@ -60,20 +53,13 @@
       margin-bottom: 10px;
     }
 
-    #description-display {
-      font-size: 5vw;
-      color: #444;
-      margin-top: 10px;
-      min-height: 3em;
-    }
-
     .input-group label, .input-group input {
       display: block;
       margin: 10px auto;
       font-size: 5vw;
     }
 
-    .input-group input, textarea {
+    .input-group input {
       padding: 8px;
       border-radius: 5px;
       border: 1px solid #ccc;
@@ -99,22 +85,6 @@
       outline: none;
     }
 
-    .text-box {
-      display: none;
-      padding: 10px;
-      margin-top: 10px;
-      background-color: #f0f0f0;
-      border-radius: 8px;
-      text-align: left;
-      max-height: 300px;
-      overflow-y: auto;
-      font-size: 4vw;
-    }
-
-    .text-box.active {
-      display: block;
-    }
-
     @media (min-width: 768px) {
       h1 {
         font-size: 36px;
@@ -124,25 +94,17 @@
         font-size: 64px;
       }
 
-      .input-group label, .input-group input, textarea, button, .text-box {
+      .input-group label, .input-group input, button {
         font-size: 18px;
       }
 
       .input-group input {
         width: auto;
       }
-
-      #description-display {
-        font-size: 20px;
-      }
     }
   </style>
 </head>
 <body>
-  <video id="background-video" autoplay loop muted playsinline>
-    <source src="https://cdn.coverr.co/videos/coverr-mountains-landscape-9056/1080p.mp4" type="video/mp4">
-  </video>
-
   <div class="container">
     <h1>🧘 Meditation Timer 🧘</h1>
     <div class="input-group">
@@ -155,15 +117,6 @@
     <button onclick="stopTimer()">Stop</button>
     <div id="timer-container">
       <div id="timer">00:00</div>
-      <div id="description-display"></div>
-      <button onclick="toggleTextBox()">How to Use</button>
-      <div class="text-box" id="textBox">
-        <p>🧘 Sit comfortably and choose a number of slots.</p>
-        <p>🕒 Assign a time and description for each slot.</p>
-        <p>🔔 Ohm sound plays during each slot.</p>
-        <p>💤 Break sound plays in between.</p>
-        <p>🔚 Alarm rings at the end.</p>
-      </div>
     </div>
   </div>
 
@@ -172,19 +125,14 @@
   <audio id="breakSound" src="./break.mp3" preload="auto"></audio>
 
   <script>
-    let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [];
+    let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [];
     let paused = false;
     let remainingTime = 0;
     const timerDisplay = document.getElementById("timer");
-    const descriptionDisplay = document.getElementById("description-display");
     const subdivisionInputsContainer = document.getElementById("subdivisionInputs");
     const ohmSound = document.getElementById("ohmSound");
 
     document.addEventListener("DOMContentLoaded", unlockAudio);
-
-    function toggleTextBox() {
-      document.getElementById("textBox").classList.toggle("active");
-    }
 
     function generateSubdivisionInputs() {
       const count = parseInt(document.getElementById("subdivisions").value);
@@ -195,7 +143,6 @@
         const div = document.createElement("div");
         const minInput = document.createElement("input");
         const secInput = document.createElement("input");
-        const descInput = document.createElement("textarea");
 
         minInput.type = "number";
         minInput.placeholder = "Minutes";
@@ -207,12 +154,9 @@
         secInput.value = "0";
         secInput.max = 59;
 
-        descInput.placeholder = "Description for Slot " + (i + 1);
-
         div.appendChild(document.createTextNode(`Slot ${i + 1}: `));
         div.appendChild(minInput);
         div.appendChild(secInput);
-        div.appendChild(descInput);
 
         subdivisionInputsContainer.appendChild(div);
       }
@@ -223,17 +167,14 @@
       if (!inputs.length) return alert("Please enter durations first using 'Enter Slot Durations'");
 
       subdivisionDurations = [];
-      subdivisionDescriptions = [];
 
       for (let div of inputs) {
-        const children = div.querySelectorAll("input, textarea");
+        const children = div.querySelectorAll("input");
         const mins = parseInt(children[0].value) || 0;
         const secs = parseInt(children[1].value) || 0;
-        const desc = children[2].value.trim();
         const total = mins * 60 + secs;
         if (total <= 0 || total > 3599) return alert("Invalid duration in one of the slots. Max 59:59");
         subdivisionDurations.push(total);
-        subdivisionDescriptions.push(desc);
       }
 
       currentSubdivision = 0;
@@ -243,7 +184,6 @@
     function startSubdivision() {
       if (currentSubdivision >= subdivisionDurations.length) {
         timerDisplay.textContent = "Session Completed :)";
-        descriptionDisplay.textContent = "";
         stopAllAudio();
         document.getElementById("alarmSound").play();
         return;
@@ -251,7 +191,6 @@
 
       let seconds = subdivisionDurations[currentSubdivision];
       remainingTime = seconds;
-      descriptionDisplay.textContent = subdivisionDescriptions[currentSubdivision] || "";
       timerDisplay.textContent = formatTime(seconds);
 
       ohmSound.currentTime = 0;
@@ -271,7 +210,6 @@
               let breakSeconds = 15;
               breakSound.play();
               timerDisplay.textContent = `Break - ${formatTime(breakSeconds)}`;
-              descriptionDisplay.textContent = "";
 
               const breakCountdown = setInterval(() => {
                 breakSeconds--;
@@ -301,9 +239,7 @@
       clearTimeout(breakTimer);
       stopAllAudio();
       timerDisplay.textContent = "";
-      descriptionDisplay.textContent = "";
       subdivisionDurations = [];
-      subdivisionDescriptions = [];
       currentSubdivision = 0;
     }
 
