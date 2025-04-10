@@ -14,7 +14,7 @@
       overflow: hidden;
     }
 
-  body {
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -207,8 +207,9 @@
 
             if (currentSubdivision < subdivisionDurations.length - 1) {
               const breakSound = document.getElementById("breakSound");
-              let breakSeconds = 15;
+              breakSound.currentTime = 0;
               breakSound.play();
+              let breakSeconds = 15;
               timerDisplay.textContent = `Break - ${formatTime(breakSeconds)}`;
 
               const breakCountdown = setInterval(() => {
@@ -223,6 +224,7 @@
                 currentSubdivision++;
                 startSubdivision();
               }, 15000);
+
             } else {
               currentSubdivision++;
               startSubdivision();
