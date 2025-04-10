@@ -236,29 +236,37 @@
       if (currentSubdivision >= subdivisionDurations.length) {
         timerDisplay.textContent = "Session Completed :)";
         descriptionDisplay.textContent = "";
-        fadeOutAudio("ohmSound");
-        fadeInAudio("alarmSound");
+        stopAllAudio();
+        document.getElementById("alarmSound").play();
         return;
       }
 
       let seconds = subdivisionDurations[currentSubdivision];
       descriptionDisplay.textContent = subdivisionDescriptions[currentSubdivision] || "";
-      fadeInAudio("ohmSound");
+      document.getElementById("ohmSound").play();
       timerDisplay.textContent = formatTime(seconds);
 
       timer = setInterval(() => {
         seconds--;
         if (seconds < 0) {
           clearInterval(timer);
-          fadeOutAudio("ohmSound");
-          fadeInAudio("breakSound");
-          timerDisplay.textContent = "Break";
-          descriptionDisplay.textContent = "";
-          breakTimer = setTimeout(() => {
-            fadeOutAudio("breakSound");
+          document.getElementById("ohmSound").pause();
+          document.getElementById("ohmSound").currentTime = 0;
+
+          if (currentSubdivision < subdivisionDurations.length - 1) {
+            document.getElementById("breakSound").play();
+            timerDisplay.textContent = "Break";
+            descriptionDisplay.textContent = "";
+            breakTimer = setTimeout(() => {
+              document.getElementById("breakSound").pause();
+              document.getElementById("breakSound").currentTime = 0;
+              currentSubdivision++;
+              startSubdivision();
+            }, 15000);
+          } else {
             currentSubdivision++;
             startSubdivision();
-          }, 3000);
+          }
         } else {
           timerDisplay.textContent = formatTime(seconds);
         }
@@ -268,9 +276,7 @@
     function stopTimer() {
       clearInterval(timer);
       clearTimeout(breakTimer);
-      fadeOutAudio("ohmSound");
-      fadeOutAudio("breakSound");
-      fadeOutAudio("alarmSound");
+      stopAllAudio();
       timerDisplay.textContent = "";
       descriptionDisplay.textContent = "";
       subdivisionDurations = [];
@@ -278,37 +284,18 @@
       currentSubdivision = 0;
     }
 
+    function stopAllAudio() {
+      ["ohmSound", "breakSound", "alarmSound"].forEach(id => {
+        const audio = document.getElementById(id);
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    }
+
     function formatTime(seconds) {
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
       return `${m}:${s < 10 ? "0" : ""}${s}`;
-    }
-
-    function fadeInAudio(id) {
-      const audio = document.getElementById(id);
-      audio.volume = 0;
-      audio.currentTime = 0;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          let fade = setInterval(() => {
-            if (audio.volume < 1) audio.volume += 0.05;
-            else clearInterval(fade);
-          }, 200);
-        }).catch(error => console.warn("Autoplay issue:", error));
-      }
-    }
-
-    function fadeOutAudio(id) {
-      const audio = document.getElementById(id);
-      let fade = setInterval(() => {
-        if (audio.volume > 0.05) audio.volume -= 0.05;
-        else {
-          clearInterval(fade);
-          audio.pause();
-          audio.volume = 1;
-        }
-      }, 200);
     }
 
     function unlockAudio() {
