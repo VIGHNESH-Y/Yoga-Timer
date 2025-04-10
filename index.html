@@ -137,7 +137,7 @@
   </style>
 </head>
 <body>
-  <video id="background-video" autoplay loop muted>
+  <video id="background-video" autoplay loop muted playsinline>
     <source src="https://cdn.coverr.co/videos/coverr-mountains-landscape-9056/1080p.mp4" type="video/mp4">
   </video>
 
@@ -166,9 +166,9 @@
     </div>
   </div>
 
-  <audio id="alarmSound" src="./alarm.mp3"></audio>
-  <audio id="ohmSound" src="./ohm.mp3" loop></audio>
-  <audio id="breakSound" src="./break.mp3"></audio>
+  <audio id="alarmSound" src="./alarm.mp3" preload="auto"></audio>
+  <audio id="ohmSound" src="./ohm.mp3" preload="auto" loop></audio>
+  <audio id="breakSound" src="./break.mp3" preload="auto"></audio>
 
   <script>
     let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [];
@@ -287,11 +287,15 @@
       const audio = document.getElementById(id);
       audio.volume = 0;
       audio.currentTime = 0;
-      audio.play();
-      let fade = setInterval(() => {
-        if (audio.volume < 1) audio.volume += 0.05;
-        else clearInterval(fade);
-      }, 200);
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          let fade = setInterval(() => {
+            if (audio.volume < 1) audio.volume += 0.05;
+            else clearInterval(fade);
+          }, 200);
+        }).catch(error => console.warn("Autoplay issue:", error));
+      }
     }
 
     function fadeOutAudio(id) {
@@ -310,6 +314,8 @@
       const audios = ["alarmSound", "ohmSound", "breakSound"];
       audios.forEach(id => {
         const audio = document.getElementById(id);
+        audio.muted = false;
+        audio.load();
         audio.play().then(() => audio.pause()).catch(() => {});
       });
     }
