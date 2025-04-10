@@ -145,7 +145,7 @@
     <h1>🧘 Meditation Timer 🧘</h1>
     <div class="input-group">
       <label>Number of Slots:</label>
-      <input type="number" id="subdivisions" min="1" step="1">
+      <input type="number" id="subdivisions" min="1" max="30" step="1">
     </div>
     <div id="subdivisionInputs"></div>
     <button onclick="generateSubdivisionInputs()">Enter Slot Durations</button>
@@ -166,15 +166,17 @@
   </div>
 
   <audio id="alarmSound" src="./alarm.mp3" preload="auto"></audio>
-  <audio id="ohmSound" src="./ohm.mp3" preload="auto" loop></audio>
+  <audio id="ohmSound" src="./ohm.mp3" preload="auto"></audio>
   <audio id="breakSound" src="./break.mp3" preload="auto"></audio>
 
   <script>
-    let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [], firstRun = true;
+    let timer, breakTimer, currentSubdivision = 0, subdivisionDurations = [], subdivisionDescriptions = [];
     const timerDisplay = document.getElementById("timer");
     const descriptionDisplay = document.getElementById("description-display");
     const subdivisionInputsContainer = document.getElementById("subdivisionInputs");
     const ohmSound = document.getElementById("ohmSound");
+
+    document.addEventListener("DOMContentLoaded", unlockAudio);
 
     function toggleTextBox() {
       document.getElementById("textBox").classList.toggle("active");
@@ -194,10 +196,12 @@
         minInput.type = "number";
         minInput.placeholder = "Minutes";
         minInput.value = "1";
+        minInput.max = 59;
 
         secInput.type = "number";
         secInput.placeholder = "Seconds";
         secInput.value = "0";
+        secInput.max = 59;
 
         descInput.placeholder = "Description for Slot " + (i + 1);
 
@@ -211,7 +215,6 @@
     }
 
     function startTimer() {
-      unlockAudio();
       const inputs = subdivisionInputsContainer.querySelectorAll("div");
       if (!inputs.length) return alert("Please enter durations first using 'Enter Slot Durations'");
 
@@ -224,7 +227,7 @@
         const secs = parseInt(children[1].value) || 0;
         const desc = children[2].value.trim();
         const total = mins * 60 + secs;
-        if (total <= 0) return alert("Invalid duration in one of the slots.");
+        if (total <= 0 || total > 3599) return alert("Invalid duration in one of the slots. Max 59:59");
         subdivisionDurations.push(total);
         subdivisionDescriptions.push(desc);
       }
@@ -246,15 +249,8 @@
       descriptionDisplay.textContent = subdivisionDescriptions[currentSubdivision] || "";
       timerDisplay.textContent = formatTime(seconds);
 
-      if (firstRun) {
-        ohmSound.play().catch(() => {
-          setTimeout(() => ohmSound.play().catch(() => {}), 500);
-        });
-      } else {
-        ohmSound.play();
-      }
-
-      firstRun = false;
+      ohmSound.loop = true;
+      ohmSound.play();
 
       timer = setInterval(() => {
         seconds--;
@@ -262,12 +258,21 @@
           clearInterval(timer);
           ohmSound.pause();
           ohmSound.currentTime = 0;
+          ohmSound.loop = false;
 
           if (currentSubdivision < subdivisionDurations.length - 1) {
             const breakSound = document.getElementById("breakSound");
+            let breakSeconds = 15;
             breakSound.play();
-            timerDisplay.textContent = "Break";
+            timerDisplay.textContent = `Break - ${formatTime(breakSeconds)}`;
             descriptionDisplay.textContent = "";
+
+            const breakCountdown = setInterval(() => {
+              breakSeconds--;
+              timerDisplay.textContent = `Break - ${formatTime(breakSeconds)}`;
+              if (breakSeconds <= 0) clearInterval(breakCountdown);
+            }, 1000);
+
             breakTimer = setTimeout(() => {
               breakSound.pause();
               breakSound.currentTime = 0;
@@ -300,6 +305,7 @@
         const audio = document.getElementById(id);
         audio.pause();
         audio.currentTime = 0;
+        if (id === "ohmSound") audio.loop = false;
       });
     }
 
